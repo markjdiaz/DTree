@@ -18,6 +18,7 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     # Your code here
     pass
 
+#Jim
 def check_homogenous(data_set):
     '''
     ========================================================================================================
@@ -38,6 +39,7 @@ def check_homogenous(data_set):
 # data_set = [[1],[1],[1],[1],[1],[1]]
 # check_homogenous(data_set) ==  1
 
+#Mark
 def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     '''
     ========================================================================================================
@@ -65,6 +67,7 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
 
 # Uses gain_ratio_nominal or gain_ratio_numeric to calculate gain ratio.
 
+#Kyosuke
 def mode(data_set):
     '''
     ========================================================================================================
@@ -76,13 +79,18 @@ def mode(data_set):
     ========================================================================================================
     '''
     # Your code here
+    mode_set = [i[0] for i in data_set]
+    mode = max(set(mode_set), key=mode_set.count)
+    return mode
     pass
+    
 # ======== Test case =============================
 # data_set = [[0],[1],[1],[1],[1],[1]]
 # mode(data_set) == 1
 # data_set = [[0],[1],[0],[0]]
 # mode(data_set) == 0
 
+#Jim
 def entropy(data_set):
     '''
     ========================================================================================================
@@ -93,7 +101,12 @@ def entropy(data_set):
     Output: Returns entropy. See Textbook for formula
     ========================================================================================================
     '''
-
+    index0 = [i[0] for i in data_set]
+    t = len(index0) # total num of instances
+    entropy = 0.0
+    for i in set(index0):
+        entropy += -(index0.count(i)/float(t))*math.log(index0.count(i)/float(t), 2)
+    return entropy    
 
 # ======== Test case =============================
 # data_set = [[0],[1],[1],[1],[0],[1],[1],[1]]
@@ -103,7 +116,7 @@ def entropy(data_set):
 # data_set = [[0],[0],[0],[0],[0],[0],[0],[0]]
 # entropy(data_set) == 0
 
-
+#Kyosuke
 def gain_ratio_nominal(data_set, attribute):
     '''
     ========================================================================================================
@@ -115,6 +128,27 @@ def gain_ratio_nominal(data_set, attribute):
     ========================================================================================================
     '''
     # Your code here
+    index0 = [i[0] for i in data_set]
+    index1 = [i[1] for i in data_set]
+#    child_instances = []
+#    for i in index1:
+#        child_instances.append(i)
+    
+    t = len(index0) # total num of instances
+    avg_entropy_children = 0.0
+    for j in set(index1):
+        avg_entropy_children += (index1.count(j)*entropy([[v[0]] for i,v in enumerate(data_set) if v[1]==j])/float(t))
+    
+    #information gain
+    IG = entropy([[i] for i in index0]) - avg_entropy_children
+    #print IG
+    #intrinsic value
+    IV = 0.0
+    for k in set(index1):
+        IV += -(index1.count(k)/float(t))*math.log(index1.count(k)/float(t), 2)
+    #print IV
+    gain_ratio_nominal = IG/IV
+    return gain_ratio_nominal
     pass
 # ======== Test case =============================
 # data_set, attr = [[1, 2], [1, 0], [1, 0], [0, 2], [0, 2], [0, 0], [1, 3], [0, 4], [0, 3], [1, 1]], 1
@@ -124,6 +158,7 @@ def gain_ratio_nominal(data_set, attribute):
 # data_set, attr = [[0, 3], [0, 3], [0, 3], [0, 4], [0, 4], [0, 4], [0, 0], [0, 2], [1, 4], [0, 4]], 1
 # gain_ratio_nominal(data_set,attr) == 0.06409559743967516
 
+#Kyosuke
 def gain_ratio_numeric(data_set, attribute, steps):
     '''
     ========================================================================================================
@@ -149,6 +184,7 @@ def gain_ratio_numeric(data_set, attribute, steps):
 # data_set,attr,step = [[1, 0.1], [0, 0.29], [1, 0.03], [0, 0.47], [1, 0.25], [1, 0.12], [1, 0.67], [1, 0.73], [1, 0.85], [1, 0.25]], 1, 1
 # gain_ratio_numeric(data_set,attr,step) == (0.23645279766002802, 0.29)
 
+#Mark
 def split_on_nominal(data_set, attribute):
     '''
     ========================================================================================================
@@ -167,6 +203,7 @@ def split_on_nominal(data_set, attribute):
 # data_set, attr = [[1, 2], [1, 0], [0, 0], [1, 3], [0, 2], [0, 3], [0, 4], [0, 4], [1, 2], [0, 1]], 1
 # split on_nominal(data_set, attr) == {0: [[1, 0], [0, 0]], 1: [[0, 1]], 2: [[1, 2], [0, 2], [1, 2]], 3: [[1, 3], [0, 3]], 4: [[0, 4], [0, 4]]}
 
+#Mark
 def split_on_numerical(data_set, attribute, splitting_value):
     '''
     ========================================================================================================
