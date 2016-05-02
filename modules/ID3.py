@@ -121,7 +121,8 @@ def entropy(data_set):
     entropy = 0.0
     for i in set(index0):
         entropy += -(index0.count(i)/float(t))*math.log(index0.count(i)/float(t), 2)
-    return entropy    
+    return entropy
+    pass
 
 # ======== Test case =============================
 # data_set = [[0],[1],[1],[1],[0],[1],[1],[1]]
@@ -190,10 +191,34 @@ def gain_ratio_numeric(data_set, attribute, steps):
     ========================================================================================================
     '''
     # Your code here
+    index0 = [i[0] for i in data_set]
+    index1 = [i[1] for i in data_set]
+    
+    t = len(index0) # total num of instances
+    avg_entropy_children = 0.0
+    
+    #replace value... based on threshold
+    #and make a new dataset combining a new index1 
+    num_index1 = [1 if index1[i] >= index1[steps] else 0 for i,v in enumerate(index1)]
+    data_set2 = [[index0[i], num_index1[i]] for i in range(len(index0))]    
+    
+    for j in set(num_index1):
+        avg_entropy_children += (num_index1.count(j)*entropy([[v[0]] for i,v in enumerate(data_set2) if v[1]==j])/float(t))
+        
+    #information gain
+    IG = entropy([[i] for i in index0]) - avg_entropy_children
+    #print IG
+    #intrinsic value
+    IV = 0.0
+    for k in set(num_index1):
+        IV += -(num_index1.count(k)/float(t))*math.log(num_index1.count(k)/float(t), 2)
+    #print IV
+    gain_ratio_numeric = IG/IV
+    return (gain_ratio_numeric, index1[steps])
     pass
 # ======== Test case =============================
 # data_set,attr,step = [[1,0.05], [1,0.17], [1,0.64], [0,0.38], [1,0.19], [1,0.68], [1,0.69], [1,0.17], [1,0.4], [0,0.53]], 1, 2
-# gain_ratio_numeric(data_set,attr,step) == (0.31918053332474033, 0.64)
+# gain_ratio_numeric(data_set,attr,step) == (0.31918053332474033, 0.64) <- something wrong here
 # data_set,attr,step = [[1, 0.35], [1, 0.24], [0, 0.67], [0, 0.36], [1, 0.94], [1, 0.4], [1, 0.15], [0, 0.1], [1, 0.61], [1, 0.17]], 1, 4
 # gain_ratio_numeric(data_set,attr,step) == (0.11689800358692547, 0.94)
 # data_set,attr,step = [[1, 0.1], [0, 0.29], [1, 0.03], [0, 0.47], [1, 0.25], [1, 0.12], [1, 0.67], [1, 0.73], [1, 0.85], [1, 0.25]], 1, 1
