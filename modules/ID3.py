@@ -51,8 +51,25 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     Output: best attribute, split value if numeric
     ========================================================================================================
     '''
-    # Your code here
-    pass
+    best_attribute = False
+    max_gain = 0
+    split_value = False
+
+    for attribute in attribute_metadata:
+        if attribute['is_nominal'] == True:
+            gain_ratio = gain_ratio_nominal(data_set, attribute)
+            if gain_ratio > max_gain:
+                max_gain = gain_ratio
+                best_attribute = attribute
+                split_value = False
+        elif attribute['is_nominal'] == False and numerical_splits_count > 0:
+            gain_ratio_data = gain_ratio_numeric(data_set, attribute)
+            gain_ratio = gain_ratio_data[0] #I'm assuming 0 index is gain ratio and 1 index is the threshold
+            if gain_ratio > max_gain:
+                max_gain = gain_ratio
+                best_attribute = attribute
+                split_value = gain_ratio_data[1]
+    return (best_attribute, split_value)
 
 # # ======== Test Cases =============================
 # numerical_splits_count = [20,20]
@@ -209,7 +226,8 @@ def split_on_nominal(data_set, attribute):
             #if the attribute value is not in the dictionary, add it and set the value to a list containing the data point
             dictionary[attr_value] = [data]
         #key = attr_value, value = all data points with that value
-    print dictionary == {0: [[0, 0], [0, 0]], 1: [[0, 1]], 2: [[1, 2], [0, 2], [1, 2]], 3: [[1, 3]], 4: [[0, 4], [0, 4], [1, 4]]}
+    #print dictionary == {0: [[0, 0], [0, 0]], 1: [[0, 1]], 2: [[1, 2], [0, 2], [1, 2]], 3: [[1, 3]], 4: [[0, 4], [0, 4], [1, 4]]}
+    return dictionary
 
 # ======== Test case =============================
 # data_set, attr = [[0, 4], [1, 3], [1, 2], [0, 0], [0, 0], [0, 4], [1, 4], [0, 2], [1, 2], [0, 1]], 1
@@ -241,8 +259,9 @@ def split_on_numerical(data_set, attribute, splitting_value):
             lower_value.append(data)
         else:
             other_values.append(data)
-    print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
-        
+    #print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
+    return (lower_value, other_values) 
+
 # ======== Test case =============================
 # d_set,a,sval = [[1, 0.25], [1, 0.89], [0, 0.93], [0, 0.48], [1, 0.19], [1, 0.49], [0, 0.6], [0, 0.6], [1, 0.34], [1, 0.19]],1,0.48
 # split_on_numerical(d_set,a,sval) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
