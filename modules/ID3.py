@@ -28,7 +28,12 @@ def check_homogenous(data_set):
     Output: Return either the homogenous attribute or None
     ========================================================================================================
      '''
-
+	index0 = [i[0] for i in data_set]
+    if len(set(index0)) == 1:
+        check_homogenous = 1
+    else :
+        check_homogenous = None
+    return check_homogenous
 # ======== Test Cases =============================
 # data_set = [[0],[1],[1],[1],[1],[1]]
 # check_homogenous(data_set) ==  None
