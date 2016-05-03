@@ -69,7 +69,12 @@ def check_homogenous(data_set):
     Output: Return either the homogenous attribute or None
     ========================================================================================================
      '''
-
+	index0 = [i[0] for i in data_set]
+    if len(set(index0)) == 1:
+        check_homogenous = 1
+    else :
+        check_homogenous = None
+    return check_homogenous
 # ======== Test Cases =============================
 # data_set = [[0],[1],[1],[1],[1],[1]]
 # check_homogenous(data_set) ==  None
@@ -92,31 +97,41 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     Output: best attribute, split value if numeric
     ========================================================================================================
     '''
+    attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "opprundifferential",'is_nominal': False}]
+    data_set = [[1, 0.27], [0, 0.42], [0, 0.86], [0, 0.68], [0, 0.04], [1, 0.01], [1, 0.33], [1, 0.42], [0, 0.51], [1, 0.4]]
+    numerical_splits_count = [20,20]
+
     best_attribute = False
+    best_attribute_index = False
     max_gain = 0
     split_value = False
 
-    for attribute in attribute_metadata:
+    for i, attribute in enumerate(attribute_metadata):
         if attribute['is_nominal'] == True:
             gain_ratio = gain_ratio_nominal(data_set, attribute)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
                 best_attribute = attribute
+                best_attribute_index = i
                 split_value = False
-        elif attribute['is_nominal'] == False and numerical_splits_count > 0:
-            gain_ratio_data = gain_ratio_numeric(data_set, attribute)
-            gain_ratio = gain_ratio_data[0] #I'm assuming 0 index is gain ratio and 1 index is the threshold
+        elif attribute['is_nominal'] == False and numerical_splits_count[i] > 0:
+            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, attribute, steps=1) #HOW TO SUBSET DATA?
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
                 best_attribute = attribute
-                split_value = gain_ratio_data[1]
-    return (best_attribute, split_value)
+                best_attribute_index = i
+                split_value = attr_split_value
+    #return (best_attribute, split_value)
+    print (best_attribute, split_value)
+    print (best_attribute_index, split_value)
+    print (best_attribute, split_value) == (1, 0.51)
 
 # # ======== Test Cases =============================
 # numerical_splits_count = [20,20]
 # attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "opprundifferential",'is_nominal': False}]
 # data_set = [[1, 0.27], [0, 0.42], [0, 0.86], [0, 0.68], [0, 0.04], [1, 0.01], [1, 0.33], [1, 0.42], [0, 0.51], [1, 0.4]]
 # pick_best_attribute(data_set, attribute_metadata, numerical_splits_count) == (1, 0.51)
+
 # attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "weather",'is_nominal': True}]
 # data_set = [[0, 0], [1, 0], [0, 2], [0, 2], [0, 3], [1, 1], [0, 4], [0, 2], [1, 2], [1, 5]]
 # pick_best_attribute(data_set, attribute_metadata, numerical_splits_count) == (1, False)
@@ -328,6 +343,7 @@ def split_on_numerical(data_set, attribute, splitting_value):
     #print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
     return (lower_value, other_values) 
 
+pick_best_attribute(None,None,None)
 # ======== Test case =============================
 # d_set,a,sval = [[1, 0.25], [1, 0.89], [0, 0.93], [0, 0.48], [1, 0.19], [1, 0.49], [0, 0.6], [0, 0.6], [1, 0.34], [1, 0.19]],1,0.48
 # split_on_numerical(d_set,a,sval) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
