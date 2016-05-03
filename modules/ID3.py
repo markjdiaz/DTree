@@ -76,9 +76,9 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
                 best_attribute_index = i
                 split_value = attr_split_value
     #return (best_attribute, split_value)
-    print (best_attribute, split_value)
-    print (best_attribute_index, split_value)
-    print (best_attribute, split_value) == (1, 0.51)
+    #print (best_attribute, split_value)
+    return (best_attribute_index, split_value)
+    #print (best_attribute, split_value) == (1, 0.51)
 
 # # ======== Test Cases =============================
 # numerical_splits_count = [20,20]
@@ -297,7 +297,6 @@ def split_on_numerical(data_set, attribute, splitting_value):
     #print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
     return (lower_value, other_values) 
 
-pick_best_attribute(None,None,None)
 # ======== Test case =============================
 # d_set,a,sval = [[1, 0.25], [1, 0.89], [0, 0.93], [0, 0.48], [1, 0.19], [1, 0.49], [0, 0.6], [0, 0.6], [1, 0.34], [1, 0.19]],1,0.48
 # split_on_numerical(d_set,a,sval) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
