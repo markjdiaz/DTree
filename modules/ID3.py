@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import math
 from node import Node
 import sys
@@ -14,7 +16,46 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     Output: The node representing the decision tree learned over the given data set
     ========================================================================================================
 
+    ID3 (Examples, Target_Attribute, Attributes)
+    Create a root node for the tree
+    If all examples are positive, Return the single-node tree Root, with label = +.
+    If all examples are negative, Return the single-node tree Root, with label = -.
+    If number of predicting attributes is empty, then Return the single node tree Root,
+    with label = most common value of the target attribute in the examples.
+    Otherwise Begin
+        A ← The Attribute that best classifies examples.
+        Decision Tree attribute for Root = A.
+        For each possible value, vi, of A,
+            Add a new tree branch below Root, corresponding to the test A = vi.
+            Let Examples(vi) be the subset of examples that have the value vi for A
+            If Examples(vi) is empty
+                Then below this new branch add a leaf node with label = most common target value in the examples
+            Else below this new branch add the subtree ID3 (Examples(vi), Target_Attribute, Attributes – {A})
+    End
+    Return Root
     '''
+    # create the root node
+    root = Node()
+    # if the training set is hemogenous, set the root node's label to this value
+    root.label = check_homogenous(dataset)
+    if not root.label:
+        # find the best attribute to split on
+        attribute = pick_best_attribute(dataset,attribute_metadata,numerical_splits_count)
+        # get the index of the decision attribute
+        root.decision_attribute = attribute[0]
+        root.is_nominal = attribute_metadata[root.decision_attribute]['is_nominal']
+        root.splitting_value = attribute[1]
+        root.name = attribute_metadata[attribute[0]]['name']
+        if root.is_nominal:
+            split_dataset = split_on_nominal(dataset,attribute[0])
+            for example in split_dataset:
+                root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth)
+        else:
+            root.children = []
+            split_dataset = split_on_numerical(dataset,attribute[0],attribute[1])
+            for example in split_dataset:
+                root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth))
+    return root
     pass
 
 #Jim
@@ -28,7 +69,12 @@ def check_homogenous(data_set):
     Output: Return either the homogenous attribute or None
     ========================================================================================================
      '''
-
+	index0 = [i[0] for i in data_set]
+    if len(set(index0)) == 1:
+        check_homogenous = 1
+    else :
+        check_homogenous = None
+    return check_homogenous
 # ======== Test Cases =============================
 # data_set = [[0],[1],[1],[1],[1],[1]]
 # check_homogenous(data_set) ==  None
