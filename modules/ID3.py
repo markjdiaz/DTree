@@ -68,11 +68,7 @@ def check_homogenous(data_set):
     ========================================================================================================
     Output: Return either the homogenous attribute or None
     ========================================================================================================
-<<<<<<< HEAD
     '''
-=======
-     '''
->>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
     index0 = [i[0] for i in data_set]
     if len(set(index0)) == 1:
         check_homogenous = 1
@@ -101,13 +97,10 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     Output: best attribute, split value if numeric
     ========================================================================================================
     '''
-<<<<<<< HEAD
-=======
     #attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "opprundifferential",'is_nominal': False}]
     #data_set = [[1, 0.27], [0, 0.42], [0, 0.86], [0, 0.68], [0, 0.04], [1, 0.01], [1, 0.33], [1, 0.42], [0, 0.51], [1, 0.4]]
     #numerical_splits_count = [20,20]
 
->>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
 
     # attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "weather",'is_nominal': True}]
     # data_set = [[0, 0], [1, 0], [0, 2], [0, 2], [0, 3], [1, 1], [0, 4], [0, 2], [1, 2], [1, 5]]
@@ -260,11 +253,7 @@ def gain_ratio_numeric(data_set, attribute, steps):
     '''
     # Your code here
     index0 = [i[0] for i in data_set]
-<<<<<<< HEAD
-    index1 = [i[attribute] for i in data_set]
-=======
-    index1 = [i[1] for i in data_set] ## this should be attribute, not i
->>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
+    index1 = [i[attribute] for i in data_set]## this should be attribute, not i <- this is fixed
     
     t = len(index0) # total num of instances
     avg_entropy_children = 0.0
