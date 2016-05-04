@@ -68,7 +68,11 @@ def check_homogenous(data_set):
     ========================================================================================================
     Output: Return either the homogenous attribute or None
     ========================================================================================================
+<<<<<<< HEAD
     '''
+=======
+     '''
+>>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
     index0 = [i[0] for i in data_set]
     if len(set(index0)) == 1:
         check_homogenous = 1
@@ -97,7 +101,18 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     Output: best attribute, split value if numeric
     ========================================================================================================
     '''
+<<<<<<< HEAD
+=======
+    #attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "opprundifferential",'is_nominal': False}]
+    #data_set = [[1, 0.27], [0, 0.42], [0, 0.86], [0, 0.68], [0, 0.04], [1, 0.01], [1, 0.33], [1, 0.42], [0, 0.51], [1, 0.4]]
+    #numerical_splits_count = [20,20]
 
+>>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
+
+    # attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "weather",'is_nominal': True}]
+    # data_set = [[0, 0], [1, 0], [0, 2], [0, 2], [0, 3], [1, 1], [0, 4], [0, 2], [1, 2], [1, 5]]
+    # pick_best_attribute(data_set, attribute_metadata, numerical_splits_count) == (1, False)
+    
     best_attribute = False
     best_attribute_index = False
     max_gain = 0
@@ -119,9 +134,9 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
                 best_attribute_index = i
                 split_value = attr_split_value
     #return (best_attribute, split_value)
-    print (best_attribute, split_value)
-    print (best_attribute_index, split_value)
-    print (best_attribute, split_value) == (1, 0.51)
+    #print (best_attribute, split_value)
+    return (best_attribute_index, split_value)
+    #print (best_attribute, split_value) == (1, 0.51)
 
 # # ======== Test Cases =============================
 # numerical_splits_count = [20,20]
@@ -245,7 +260,11 @@ def gain_ratio_numeric(data_set, attribute, steps):
     '''
     # Your code here
     index0 = [i[0] for i in data_set]
+<<<<<<< HEAD
     index1 = [i[attribute] for i in data_set]
+=======
+    index1 = [i[1] for i in data_set] ## this should be attribute, not i
+>>>>>>> e1134311f6726333cc1712ecc6d674c0698aae7b
     
     t = len(index0) # total num of instances
     avg_entropy_children = 0.0
@@ -348,7 +367,6 @@ def split_on_numerical(data_set, attribute, splitting_value):
     #print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
     return (lower_value, other_values) 
 
-pick_best_attribute(None,None,None)
 # ======== Test case =============================
 # d_set,a,sval = [[1, 0.25], [1, 0.89], [0, 0.93], [0, 0.48], [1, 0.19], [1, 0.49], [0, 0.6], [0, 0.6], [1, 0.34], [1, 0.19]],1,0.48
 # split_on_numerical(d_set,a,sval) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
