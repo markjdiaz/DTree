@@ -37,22 +37,22 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     # create the root node
     root = Node()
     # if the training set is hemogenous, set the root node's label to this value
-    root.label = check_homogenous(dataset)
+    root.label = check_homogenous(data_set)
     if not root.label:
         # find the best attribute to split on
-        attribute = pick_best_attribute(dataset,attribute_metadata,numerical_splits_count)
+        attribute = pick_best_attribute(data_set,attribute_metadata,numerical_splits_count)
         # get the index of the decision attribute
         root.decision_attribute = attribute[0]
         root.is_nominal = attribute_metadata[root.decision_attribute]['is_nominal']
         root.splitting_value = attribute[1]
         root.name = attribute_metadata[attribute[0]]['name']
         if root.is_nominal:
-            split_dataset = split_on_nominal(dataset,attribute[0])
+            split_dataset = split_on_nominal(data_set,attribute[0])
             for example in split_dataset:
                 root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth)
         else:
             root.children = []
-            split_dataset = split_on_numerical(dataset,attribute[0],attribute[1])
+            split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
             for example in split_dataset:
                 root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth))
     return root
@@ -68,8 +68,8 @@ def check_homogenous(data_set):
     ========================================================================================================
     Output: Return either the homogenous attribute or None
     ========================================================================================================
-     '''
-	index0 = [i[0] for i in data_set]
+    '''
+    index0 = [i[0] for i in data_set]
     if len(set(index0)) == 1:
         check_homogenous = 1
     else :
@@ -97,9 +97,6 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     Output: best attribute, split value if numeric
     ========================================================================================================
     '''
-    attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "opprundifferential",'is_nominal': False}]
-    data_set = [[1, 0.27], [0, 0.42], [0, 0.86], [0, 0.68], [0, 0.04], [1, 0.01], [1, 0.33], [1, 0.42], [0, 0.51], [1, 0.4]]
-    numerical_splits_count = [20,20]
 
     best_attribute = False
     best_attribute_index = False
@@ -201,7 +198,7 @@ def gain_ratio_nominal(data_set, attribute):
     '''
     # Your code here
     index0 = [i[0] for i in data_set]
-    index1 = [i[1] for i in data_set]
+    index1 = [i[attribute] for i in data_set]
 #    child_instances = []
 #    for i in index1:
 #        child_instances.append(i)
@@ -248,29 +245,37 @@ def gain_ratio_numeric(data_set, attribute, steps):
     '''
     # Your code here
     index0 = [i[0] for i in data_set]
-    index1 = [i[1] for i in data_set]
+    index1 = [i[attribute] for i in data_set]
     
     t = len(index0) # total num of instances
     avg_entropy_children = 0.0
     
-    #replace value... based on threshold
-    #and make a new dataset combining a new index1 
-    num_index1 = [1 if index1[i] >= index1[steps] else 0 for i,v in enumerate(index1)]
-    data_set2 = [[index0[i], num_index1[i]] for i in range(len(index0))]    
-    
-    for j in set(num_index1):
-        avg_entropy_children += (num_index1.count(j)*entropy([[v[0]] for i,v in enumerate(data_set2) if v[1]==j])/float(t))
+    grn = {}
+    for x in xrange(0,len(index0),steps):
+        #replace value... based on threshold
+        #and make a new dataset combining a new index1
+        num_index1 = [1 if index1[i] >= index1[x] else 0 for i,v in enumerate(index1)]
+        data_set2 = [[index0[i], num_index1[i]] for i in range(len(index0))]
+        avg_entropy_children = 0.0
+        for j in set(num_index1):
+            avg_entropy_children += (num_index1.count(j)*entropy([[v[0]] for i,v in enumerate(data_set2) if v[1]==j])/float(t))
         
-    #information gain
-    IG = entropy([[i] for i in index0]) - avg_entropy_children
-    #print IG
-    #intrinsic value
-    IV = 0.0
-    for k in set(num_index1):
-        IV += -(num_index1.count(k)/float(t))*math.log(num_index1.count(k)/float(t), 2)
-    #print IV
-    gain_ratio_numeric = IG/IV
-    return (gain_ratio_numeric, index1[steps])
+        #information gain
+        IG = 0.0
+        IG = entropy([[i] for i in index0]) - avg_entropy_children
+        #print IG
+        #intrinsic value
+        IV = 0.0
+        for k in set(num_index1):
+            IV += -(num_index1.count(k)/float(t))*math.log(num_index1.count(k)/float(t), 2)
+        #print IV
+        if IV == 0:
+            grn[index1[x]] = 0
+        else:
+            grn[index1[x]] = IG/IV
+        #print grn
+    step, gain_ratio_numeric = max(grn.iteritems(), key=lambda x:x[1])
+    return (gain_ratio_numeric, step)
     pass
 # ======== Test case =============================
 # data_set,attr,step = [[1,0.05], [1,0.17], [1,0.64], [0,0.38], [1,0.19], [1,0.68], [1,0.69], [1,0.17], [1,0.4], [0,0.53]], 1, 2
