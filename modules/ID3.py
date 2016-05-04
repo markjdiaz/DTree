@@ -253,7 +253,7 @@ def gain_ratio_numeric(data_set, attribute, steps):
     '''
     # Your code here
     index0 = [i[0] for i in data_set]
-    index1 = [i[1] for i in data_set]
+    index1 = [i[1] for i in data_set] ## this should be attribute, not i
     
     t = len(index0) # total num of instances
     avg_entropy_children = 0.0
