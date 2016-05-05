@@ -35,8 +35,27 @@ class Node:
         '''
         given a single observation, will return the output of the tree
         '''
-	# Your code here
-	pass
+        # still don't know the meaning of "label - is None if there is a decision attribute"
+        # iterate until no children and return self.label
+        while self:
+            if bool(self.children) == False:
+                return self.label
+            else:
+                # if an attribute is nominal or numerical
+                if self.is_nominal == True:
+                    #print instance
+                    #get a value from dics, given an instance value on attribute
+                    self = self.children.get(instance[self.decision_attribute]) 
+                    #print self
+                else:
+                    # whether an instance value on given attribute is smaller than splitting_value
+                    if instance[self.decision_attribute] < self.splitting_value:
+                        self = self.children[0] #spcify index 0 -> define the value for self
+                        #print self
+                    else:
+                        self = self.children[1]
+                        #print self
+        pass
 
     def print_tree(self, indent = 0):
         '''
