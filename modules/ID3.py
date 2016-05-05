@@ -102,34 +102,33 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
     #numerical_splits_count = [20,20]
 
 
-    # attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "weather",'is_nominal': True}]
-    # data_set = [[0, 0], [1, 0], [0, 2], [0, 2], [0, 3], [1, 1], [0, 4], [0, 2], [1, 2], [1, 5]]
-    # pick_best_attribute(data_set, attribute_metadata, numerical_splits_count) == (1, False)
+    #attribute_metadata = [{'name': "winner",'is_nominal': True},{'name': "weather",'is_nominal': True}]
+    #data_set = [[0, 0], [1, 0], [0, 2], [0, 2], [0, 3], [1, 1], [0, 4], [0, 2], [1, 2], [1, 5]]
+    #pick_best_attribute(data_set, attribute_metadata, numerical_splits_count) == (1, False)
     
     best_attribute = False
-    best_attribute_index = False
     max_gain = 0
     split_value = False
 
     for i, attribute in enumerate(attribute_metadata):
+        if i == 0: continue
         if attribute['is_nominal'] == True:
-            gain_ratio = gain_ratio_nominal(data_set, attribute)
+            gain_ratio = gain_ratio_nominal(data_set, i)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
-                best_attribute = attribute
-                best_attribute_index = i
+                best_attribute = i
                 split_value = False
         elif attribute['is_nominal'] == False and numerical_splits_count[i] > 0:
-            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, attribute, steps=1) #HOW TO SUBSET DATA?
+            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=1)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
-                best_attribute = attribute
-                best_attribute_index = i
+                best_attribute = i
                 split_value = attr_split_value
-    #return (best_attribute, split_value)
-    #print (best_attribute, split_value)
-    return (best_attribute_index, split_value)
     #print (best_attribute, split_value) == (1, 0.51)
+    #print (best_attribute, split_value) == (1, False)
+    return (best_attribute, split_value)
+    #print (best_attribute, split_value) == (1, 0.51)
+
 
 # # ======== Test Cases =============================
 # numerical_splits_count = [20,20]
@@ -356,6 +355,7 @@ def split_on_numerical(data_set, attribute, splitting_value):
     #print (lower_value, other_values) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
     return (lower_value, other_values) 
 
+pick_best_attribute(None, None, None)
 # ======== Test case =============================
 # d_set,a,sval = [[1, 0.25], [1, 0.89], [0, 0.93], [0, 0.48], [1, 0.19], [1, 0.49], [0, 0.6], [0, 0.6], [1, 0.34], [1, 0.19]],1,0.48
 # split_on_numerical(d_set,a,sval) == ([[1, 0.25], [1, 0.19], [1, 0.34], [1, 0.19]],[[1, 0.89], [0, 0.93], [0, 0.48], [1, 0.49], [0, 0.6], [0, 0.6]])
