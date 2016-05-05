@@ -33,11 +33,14 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
             Else below this new branch add the subtree ID3 (Examples(vi), Target_Attribute, Attributes – {A})
     End
     Return Root
-    '''
+    '''        
     # create the root node
     root = Node()
     # if the training set is hemogenous, set the root node's label to this value
     root.label = check_homogenous(data_set)
+    # if we've reached the maximum search depth, set the node's label to the most common attribute?
+    if depth == 0:    
+        root.label = _most_common_classification(data_set)
     if not root.label:
         # find the best attribute to split on
         attribute = pick_best_attribute(data_set,attribute_metadata,numerical_splits_count)
@@ -46,19 +49,39 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
         root.is_nominal = attribute_metadata[root.decision_attribute]['is_nominal']
         root.splitting_value = attribute[1]
         root.name = attribute_metadata[attribute[0]]['name']
+        # if the attribute is nominal...
         if root.is_nominal:
+            # split the dataset into parts on the best attribute
             split_dataset = split_on_nominal(data_set,attribute[0])
             for example in split_dataset:
+                # for each subset of the data create a new dictionary in children {attribute_index:node}
                 root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth)
+        # if the attribute is numerical...
         else:
-            root.children = []
-            split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
-            for example in split_dataset:
-                root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth))
+            if numerical_splits_count[attribute[0]] == 0:
+                root.label = _most_common_classification(data_set)
+            else:
+                numerical_splits_count[attribute[0]] -= 1
+                root.children = []
+                # split the dataset into 2 parts on the best attribute
+                split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
+                for example in split_dataset:
+                    # for each subset of the data create a new list in children [node,node]
+                    root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth))
     return root
     pass
 
 #Jim
+# pass in a subset of the data
+# return the most common classification label
+def _most_common_classification(data_set):
+    # split the dataset by possible classifications
+    classification_dict = split_on_nominal(data_set,0)
+    # sort the subsets by number of examples
+    classification_lables = sorted(classification_dict, key=lambda k: len(classification_dict[k]), reverse=True)
+    # set the node's label to the most common
+    return classification_labels[0]
+
 def check_homogenous(data_set):
     '''
     ========================================================================================================
@@ -71,7 +94,7 @@ def check_homogenous(data_set):
     '''
     index0 = [i[0] for i in data_set]
     if len(set(index0)) == 1:
-        check_homogenous = 1
+        check_homogenous = index0[0]
     else :
         check_homogenous = None
     return check_homogenous
