@@ -332,7 +332,7 @@ def split_on_nominal(data_set, attribute):
     dictionary = {}
 
     for data in data_set:
-        attr_value = data[attribute]
+        attr_value = data[attribute] 
         if attr_value in dictionary:
         #if the attribute value is already in the dictionary, add the data point to the dictionary value list list
             dp_list = dictionary[attr_value]
@@ -351,6 +351,13 @@ def split_on_nominal(data_set, attribute):
 
 # data_set, attr = [[1, 2], [1, 0], [0, 0], [1, 3], [0, 2], [0, 3], [0, 4], [0, 4], [1, 2], [0, 1]], 1
 # split on_nominal(data_set, attr) == {0: [[1, 0], [0, 0]], 1: [[0, 1]], 2: [[1, 2], [0, 2], [1, 2]], 3: [[1, 3], [0, 3]], 4: [[0, 4], [0, 4]]}
+
+def calculate_attr_average(data_set, i):
+    attrs = []
+    for data in data_set:
+        if data[i] != None:
+            attrs.append(data[i])
+    return float(sum(attrs))/len(attrs)
 
 #Mark
 def split_on_numerical(data_set, attribute, splitting_value):
@@ -371,6 +378,10 @@ def split_on_numerical(data_set, attribute, splitting_value):
     
     for data in data_set:
         attr_value = data[attribute]
+        if attr_value == None: #if attribute is missing
+            attr_average = calculate_attr_average(data_set, attribute)
+            attr_value = attr_average
+
         if attr_value < splitting_value:
             lower_value.append(data)
         else:
