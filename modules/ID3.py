@@ -38,9 +38,13 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     root = Node()
     # if the training set is hemogenous, set the root node's label to this value
     root.label = check_homogenous(data_set)
+    if root.label != None:
+        return root
     # if we've reached the maximum search depth, set the node's label to the most common attribute?
     if depth == 0:    
         root.label = _most_common_classification(data_set)
+        return root
+
     if not root.label:
         # find the best attribute to split on
         attribute = pick_best_attribute(data_set,attribute_metadata,numerical_splits_count)
@@ -55,7 +59,7 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
             split_dataset = split_on_nominal(data_set,attribute[0])
             for example in split_dataset:
                 # for each subset of the data create a new dictionary in children {attribute_index:node}
-                root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth)
+                root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth-1)
         # if the attribute is numerical...
         else:
             if numerical_splits_count[attribute[0]] == 0:
@@ -67,9 +71,8 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
                 split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
                 for example in split_dataset:
                     # for each subset of the data create a new list in children [node,node]
-                    root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth))
+                    root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth-1))
     return root
-    pass
 
 #Jim
 # pass in a subset of the data
@@ -77,8 +80,9 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
 def _most_common_classification(data_set):
     # split the dataset by possible classifications
     classification_dict = split_on_nominal(data_set,0)
+    #print "classification_dict: " + str(classification_dict)
     # sort the subsets by number of examples
-    classification_lables = sorted(classification_dict, key=lambda k: len(classification_dict[k]), reverse=True)
+    classification_labels = sorted(classification_dict, key=lambda k: len(classification_dict[k]), reverse=True)
     # set the node's label to the most common
     return classification_labels[0]
 
