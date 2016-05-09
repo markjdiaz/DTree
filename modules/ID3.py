@@ -254,7 +254,10 @@ def gain_ratio_nominal(data_set, attribute):
     for k in set(index1):
         IV += -(index1.count(k)/float(t))*math.log(index1.count(k)/float(t), 2)
     #print IV
-    gain_ratio_nominal = IG/IV
+    if IV == 0:
+        gain_ratio_nominal = 0
+    else:
+        gain_ratio_nominal = IG/IV
     return gain_ratio_nominal
     pass
 # ======== Test case =============================
