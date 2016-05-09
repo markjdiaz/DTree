@@ -1,4 +1,4 @@
-from random
+import random
 from ID3 import *
 from operator import xor
 from parse import parse
@@ -16,7 +16,8 @@ def get_graph_accuracy_partial(train_set, attribute_metadata, validate_set, nume
     this function will return the validation accuracy of a specified (percentage) portion of the training setself.
     '''
     train_set_size = len(train_set)
-    #take a random sample from the train_set of size pct
+
+    tree = ID3(train_set, attribute_metadata, numerical_splits_count, depth)
     subset = random.sample(set(train_set), int(pct*train_set_size))
     return validation_accuracy(tree,validate_set)
 
@@ -28,7 +29,10 @@ def get_graph_data(train_set, attribute_metadata, validate_set, numerical_splits
     arr = []
     for pct in pcts:
         partials = []
+        train_set_size = len(train_set)
+
         for i in range(0,iterations):
+            #take a random sample from the train_set of size pct
             accuracy = get_graph_accuracy_partial(train_set, attribute_metadata, validate_set, numerical_splits_count, pct, tree)
             partials.append(accuracy)
         average = float(sum(partials))/len(partials)
@@ -46,11 +50,16 @@ def get_graph(train_set, attribute_metadata, validate_set, numerical_splits_coun
     percentages of the data.
     '''
     increment = 5
-    tree = ID3(subset, attribute_metadata, numerical_splits_count, depth)
+    tree = ID3(train_set, attribute_metadata, numerical_splits_count, depth)
     pcts = []
     #starting from lower (0), add increasing percents of train_set. (e.g. 0, 5%, 10%....upper bound)
-    for i in xrange(lower,100-upper,increment):
+    for i in xrange(lower,int(100-upper),increment):
         pcts.append(lower + i*increment)
 
-    accuracy_partials = get_graph_data(train_set, attribute_metadata, validate_set, numerical_splits_count, iterations, pcts, tree)
+    #accuracy_partials = get_graph_data(train_set, attribute_metadata, validate_set, numerical_splits_count, iterations, pcts, tree)
     #make graph using partials and pcts as x values
+    #pcts = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    #accuracy_partials = [0.6, 0.7, 0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
+    plt.scatter(pcts,accuracy_partials) #plot the points
+    plt.plot(pcts, accuracy_partials) #connect the points with lines
+    plt.show()

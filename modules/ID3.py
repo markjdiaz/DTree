@@ -150,15 +150,12 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
                 best_attribute = i
                 split_value = False
         elif attribute['is_nominal'] == False and numerical_splits_count[i] > 0:
-            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=1)
+            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=2000)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
                 best_attribute = i
                 split_value = attr_split_value
-    #print (best_attribute, split_value) == (1, 0.51)
-    #print (best_attribute, split_value) == (1, False)
     return (best_attribute, split_value)
-    #print (best_attribute, split_value) == (1, 0.51)
 
 
 # # ======== Test Cases =============================
@@ -254,7 +251,11 @@ def gain_ratio_nominal(data_set, attribute):
     for k in set(index1):
         IV += -(index1.count(k)/float(t))*math.log(index1.count(k)/float(t), 2)
     #print IV
-    gain_ratio_nominal = IG/IV
+    if IV == 0:
+        gain_ratio_nominal = 0
+    else:
+        gain_ratio_nominal = IG/IV
+
     return gain_ratio_nominal
     pass
 # ======== Test case =============================
