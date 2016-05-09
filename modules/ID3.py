@@ -255,7 +255,6 @@ def gain_ratio_nominal(data_set, attribute):
         gain_ratio_nominal = 0
     else:
         gain_ratio_nominal = IG/IV
-
     return gain_ratio_nominal
     pass
 # ======== Test case =============================
