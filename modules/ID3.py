@@ -48,7 +48,11 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     if not root.label:
         # find the best attribute to split on
         attribute = pick_best_attribute(data_set,attribute_metadata,numerical_splits_count)
-        # get the index of the decision attribute
+        # if there is no attribute, return the root node with label = mode value
+        if not attribute[0]:
+            root.label = mode(data_set)
+            return root
+        # get the index of the decision attribute        
         root.decision_attribute = attribute[0]
         root.is_nominal = attribute_metadata[root.decision_attribute]['is_nominal']
         root.splitting_value = attribute[1]
@@ -335,7 +339,9 @@ def split_on_nominal(data_set, attribute):
     dictionary = {}
 
     for data in data_set:
-        attr_value = data[attribute] 
+        attr_value = data[attribute]
+        if attr_value == '?':
+            attr_value = 99 ## give a numeric value for a missing value
         if attr_value in dictionary:
         #if the attribute value is already in the dictionary, add the data point to the dictionary value list list
             dp_list = dictionary[attr_value]
@@ -380,7 +386,7 @@ def split_on_numerical(data_set, attribute, splitting_value):
     
     for data in data_set:
         attr_value = data[attribute]
-        if attr_value == None: #if attribute is missing
+        if attr_value == '?': #if attribute is missing ##I think '?' instead of None 
             attr_average = calculate_attr_average(data_set, attribute)
             attr_value = attr_average
 
