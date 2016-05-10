@@ -4,6 +4,9 @@ import math
 from node import Node
 import sys
 
+
+PRUNING = True
+
 def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     '''
     See Textbook for algorithm.
@@ -34,6 +37,7 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     End
     Return Root
     '''        
+    total_data_set_size = 50000
     # create the root node
     root = Node()
     # if the training set is hemogenous, set the root node's label to this value
@@ -61,6 +65,12 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
         if root.is_nominal:
             # split the dataset into parts on the best attribute
             split_dataset = split_on_nominal(data_set,attribute[0])
+            
+            if PRUNING:
+                    if len(split_dataset) < .05*total_data_set_size:
+                        root.label = _most_common_classification(data_set)
+                        return root
+
             for example in split_dataset:
                 # for each subset of the data create a new dictionary in children {attribute_index:node}
                 root.children[example] = ID3(split_dataset[example],attribute_metadata,numerical_splits_count,depth-1)
@@ -73,6 +83,12 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
                 root.children = []
                 # split the dataset into 2 parts on the best attribute
                 split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
+                
+                if PRUNING:
+                    if len(split_dataset) < .05*total_data_set_size:
+                        root.label = _most_common_classification(data_set)
+                        return root
+
                 for example in split_dataset:
                     # for each subset of the data create a new list in children [node,node]
                     root.children.append(ID3(example,attribute_metadata,numerical_splits_count,depth-1))
@@ -150,7 +166,7 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
                 best_attribute = i
                 split_value = False
         elif attribute['is_nominal'] == False and numerical_splits_count[i] > 0:
-            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=2000)
+            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=100)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
                 best_attribute = i
