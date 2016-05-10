@@ -71,29 +71,33 @@ class Node:
         '''
         dnf_list = self._print_dnf_tree()
         result = {}
-        print dnf_list
         for d in dnf_list:
-            print d['class'],d['rule']
-            if d['class'] in result:
+            if not 'rule' in d:
+                result[d['class']] = None
+            elif d['class'] in result:
                 result[d['class']] = '{0} ^ ({1})'.format(result[d['class']],d['rule'])
             else:
                 result[d['class']] = '({0})'.format(d['rule'])
-        print result
+        self._print_pretty_dnf(result)
         return result
+
+    def _print_pretty_dnf(self,rules):
+        for r in rules:
+            print '### {0} ###\n'.format(r)
+            print rules[r]
+            print '\n\n'
 
     def _print_dnf_tree(self):
         '''
         returns the disjunct normalized form of the tree.
         '''
         dnf_list = []
-        if self.label is not None:
+        if len(self.children) == 0:
             dnf = {'class':self.label}
-            print dnf
             return [dnf]
         else:
             for i,c in enumerate(self.children):
                 if self.is_nominal:
-                    print c
                     temp_dnf_list = self.children[c]._print_dnf_tree()
                     for d in temp_dnf_list:
                         rule = '{0}={1}'.format(self.decision_attribute,c)
@@ -103,10 +107,8 @@ class Node:
                             d['rule'] = '{0}'.format(rule)
                     
                 else:
-                    print c.label
                     temp_dnf_list = c._print_dnf_tree()
                     for d in temp_dnf_list:
-                        print dnf_list
                         if i == 0:
                             rule = '{0}<{1}'.format(self.decision_attribute,self.splitting_value)
                         else:
@@ -115,7 +117,6 @@ class Node:
                             d['rule'] = '{0} v {1}'.format(d['rule'],rule)
                         else:
                             d['rule'] = '{0}'.format(rule)
-                    print dnf_list
                 dnf_list = dnf_list + temp_dnf_list
             return dnf_list
         pass
@@ -142,4 +143,5 @@ def dnf_test():
     n[4].label = 0
     n[0].print_dnf_tree()
 
-dnf_test()
+if __name__ == "__main__":
+    dnf_test()

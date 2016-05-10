@@ -5,7 +5,7 @@ from node import Node
 import sys
 
 
-PRUNING = True
+PRUNING = False
 
 def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     '''
@@ -38,6 +38,7 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
     Return Root
     '''        
     total_data_set_size = 50000
+    splits_count = 0
     # create the root node
     root = Node()
     # if the training set is hemogenous, set the root node's label to this value
@@ -49,6 +50,12 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
         root.label = _most_common_classification(data_set)
         return root
 
+    if PRUNING:
+        if len(data_set) < .05*total_data_set_size:
+            print depth
+            root.label = _most_common_classification(data_set)
+            return root
+    
     if not root.label:
         # find the best attribute to split on
         attribute = pick_best_attribute(data_set,attribute_metadata,numerical_splits_count)
@@ -66,10 +73,11 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
             # split the dataset into parts on the best attribute
             split_dataset = split_on_nominal(data_set,attribute[0])
             
-            if PRUNING:
+            '''if PRUNING:
                     if len(split_dataset) < .05*total_data_set_size:
+                        print depth
                         root.label = _most_common_classification(data_set)
-                        return root
+                        return root'''
 
             for example in split_dataset:
                 # for each subset of the data create a new dictionary in children {attribute_index:node}
@@ -84,10 +92,11 @@ def ID3(data_set, attribute_metadata, numerical_splits_count, depth):
                 # split the dataset into 2 parts on the best attribute
                 split_dataset = split_on_numerical(data_set,attribute[0],attribute[1])
                 
-                if PRUNING:
+                ''''if PRUNING:
                     if len(split_dataset) < .05*total_data_set_size:
+                        print depth
                         root.label = _most_common_classification(data_set)
-                        return root
+                        return root'''
 
                 for example in split_dataset:
                     # for each subset of the data create a new list in children [node,node]
@@ -166,7 +175,7 @@ def pick_best_attribute(data_set, attribute_metadata, numerical_splits_count):
                 best_attribute = i
                 split_value = False
         elif attribute['is_nominal'] == False and numerical_splits_count[i] > 0:
-            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=100)
+            gain_ratio, attr_split_value = gain_ratio_numeric(data_set, i, steps=1)
             if gain_ratio > max_gain:
                 max_gain = gain_ratio
                 best_attribute = i
